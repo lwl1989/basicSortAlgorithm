@@ -1,5 +1,11 @@
 package sort
+/****
 
+gap 3
+	i = 3
+		j = 0
+			arr[j] > arr[j+gap]
+ */
 func Shell(arr []int,len int) []int  {
 	var gap,i,j,temp int
 	for gap=len/2; gap>0; gap /=2 { /* 设置排序的步长，步长gap每次减半，直到减到*/
