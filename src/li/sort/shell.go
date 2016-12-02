@@ -1,6 +1,6 @@
 package sort
 /****
-
+希尔排序
 gap 3
 	i = 3
 		j = 0
