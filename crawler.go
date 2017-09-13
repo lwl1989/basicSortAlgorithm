@@ -10,10 +10,8 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"github.com/fern4lvarez/go-metainspector/metainspector"
 	"gopkg.in/mgo.v2"
 	"time"
-	"github.com/axgle/mahonia"
 	"crawler/download"
 	"crawler/parser"
 )
@@ -131,21 +129,8 @@ func (crawler *crawlerUrl) save(scraper *parser.Scraper)  {
 		log.Fatal(err)
 	}
 }
-func (crawler *crawlerUrl) run() (*metainspector.MetaInspector) {
 
-	MI, err := metainspector.New(crawler.Inlet.String())
-	if err != nil {
-		//fmt.Println(MI)
-		fmt.Println("err:",err)
-		return nil
-	}
-	return MI
-}
 
-func convert(value ,newCharset string) (string) {
-	str := mahonia.NewEncoder(newCharset).ConvertString(value)
-	return str
-}
 func main() {
 	http.HandleFunc("/", Crawler)
 	err := http.ListenAndServe(":9091", nil)
