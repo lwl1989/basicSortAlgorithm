@@ -13,6 +13,9 @@ import (
 	"github.com/fern4lvarez/go-metainspector/metainspector"
 	"gopkg.in/mgo.v2"
 	"time"
+	"github.com/axgle/mahonia"
+	"crawler/download"
+	"crawler/parser"
 )
 
 //url队列
@@ -40,16 +43,15 @@ type reqCrawler struct {
 	Url      string `json:"url"`
 }
 
-type crawlerSave struct {
-	name string
-//	data struct{
-		url string
-		author string
-		keywords []string
-		describe string
-		images []string
-		time time.Time
-//	}
+type CrawlerSave struct {
+	Name string
+	Url string
+	Author string
+	Keywords []string
+	Describe string
+	MetaImage string
+	Images []string
+	Time time.Time
 }
 
 
@@ -64,23 +66,32 @@ func Crawler(w http.ResponseWriter, req *http.Request) {
 	println("body")
 	body_str := string(body)
 	var reqCrawler reqCrawler
-	var crawler crawlerUrl
+	var crawlerUrl crawlerUrl
 	if "" != body_str {
 		if err := json.Unmarshal(body, &reqCrawler); err == nil {
 			println("crawler")
 
-			crawler.Inlet, err = url.Parse(reqCrawler.Url)
+			crawlerUrl.Inlet, err = url.Parse(reqCrawler.Url)
 			if nil != err {
 				io.WriteString(w, "over!\n")
 				panic("over")
 			}
-			crawler.MaxLen, _ = strconv.Atoi(reqCrawler.MaxLen)
-			crawler.MaxTime, _ = strconv.Atoi(reqCrawler.MaxTime)
-			crawler.Interval, _ = strconv.Atoi(reqCrawler.Interval)
-			crawler.Name = reqCrawler.Name
-			crawler.Urls.want.PushFront(crawler.Inlet)
-			mi := crawler.run()
-			crawler.save(mi)
+			crawlerUrl.MaxLen, _ = strconv.Atoi(reqCrawler.MaxLen)
+			crawlerUrl.MaxTime, _ = strconv.Atoi(reqCrawler.MaxTime)
+			crawlerUrl.Interval, _ = strconv.Atoi(reqCrawler.Interval)
+			crawlerUrl.Name = reqCrawler.Name
+			crawlerUrl.Urls.want.PushFront(crawlerUrl.Inlet)
+
+			str := download.Get(crawlerUrl.Inlet.String())
+			scraper , err := parser.NewScraper(crawlerUrl.Inlet,str)
+			if nil == err {
+				crawlerUrl.save(scraper)
+			} else {
+				fmt.Println(err)
+				io.WriteString(w, "error");
+			}
+			//mi := crawlerUrl.run()
+			//crawlerUrl.save(mi)
 		} else {
 			println("err")
 			fmt.Println(err)
@@ -91,26 +102,30 @@ func Crawler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "hello, world!\n")
 }
 
-func (crawler *crawlerUrl) save(mi *metainspector.MetaInspector)  {
+func (crawler *crawlerUrl) save(scraper *parser.Scraper)  {
 	session, err := mgo.Dial("54.222.155.203:56790,54.222.182.136:56790,54.223.193.154:56790")
 	if err != nil {
 		panic(err)
 	}
 	defer session.Close()
 
+	keywords := scraper.Keywords
+	description := scraper.Description
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB("crawler").C("test")
-
-	err = c.Insert(&crawlerSave{
+	save := &CrawlerSave{
 		crawler.Name,
 		crawler.Inlet.String(),
-		mi.Author(),
-		mi.Keywords(),
-		mi.Description(),
-		mi.Images(),
+		scraper.Author,
+		keywords,
+		description,
+		scraper.MetaImage,
+		scraper.Images,
 		time.Now(),
-	})
+	}
+	fmt.Println("save",save)
+	err = c.Insert(save)
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
@@ -127,6 +142,10 @@ func (crawler *crawlerUrl) run() (*metainspector.MetaInspector) {
 	return MI
 }
 
+func convert(value ,newCharset string) (string) {
+	str := mahonia.NewEncoder(newCharset).ConvertString(value)
+	return str
+}
 func main() {
 	http.HandleFunc("/", Crawler)
 	err := http.ListenAndServe(":9091", nil)
