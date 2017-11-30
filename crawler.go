@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"gopkg.in/mgo.v2"
 	"time"
-	"crawler/download"
-	"crawler/parser"
+	"basicSortAlgorithm/crawler/download"
+	"basicSortAlgorithm/crawler/parser"
 )
 
 //url队列
