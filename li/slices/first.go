@@ -16,7 +16,7 @@ func main()  {
 	//numbers1[0] = 5
 
 	//初始化切片的几种方式 1.存在已有数组  将数组赋值进入，并且可以选择切片空间  起始下标:终止下标:分配的内存（cap） len= 终止下标- 起始下标
- 	var numbers1 = numbers[3:5:10]
+ 	numbers1 := numbers[3:5:10]
 	fmt.Println("初始化切片的几种方式 1.存在已有数组  将数组赋值进入，并且可以选择切片空间  起始下标:终止下标:分配的内存（cap） len= 终止下标- 起始下标")
 	fmt.Print("数据长度为：")
 	fmt.Println(len(numbers1))
@@ -25,7 +25,7 @@ func main()  {
 	numbers1[0] = 5
 
 	fmt.Println()
-	var numbers2 []int = make([]int,3,10)
+	numbers2 := make([]int,3,10)
 	//长度为make的size
 	fmt.Println("初始化切片的几种方式 2.make(类型，长度，分配内存)")
 	fmt.Print("数据长度为：")
