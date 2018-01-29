@@ -20,7 +20,7 @@ func Half(arr []int, len int) []int {
 
 			mid := (low+high)/2   /* 找到中间元素 */
 
-			if(arr[mid]<temp) {  /* 如果中间元素比但前元素大，当前元素要插入到中间元素的左侧 */
+			if arr[mid]<temp {  /* 如果中间元素比但前元素大，当前元素要插入到中间元素的左侧 */
 				high = mid - 1
 			}else {              /* 如果中间元素比当前元素小，但前元素要插入到中间元素的右侧 */
 				low = mid + 1

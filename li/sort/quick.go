@@ -13,14 +13,14 @@ func Quick(arr []int,len int) []int {
 	for i:=0;i<len;i++ {
 		temp := arr[i]
 		for j:=len-1; j>i; j-- {
-			if(i==2) {
+			if i==2 {
 				for offset,num := range arr {
 					fmt.Printf("s[%d] == %d  ", offset, num)
 				}
 				fmt.Println()
-				fmt.Println(arr[i]+' '+arr[j]);
+				fmt.Println(arr[i]+' '+arr[j])
 			}
-			if(temp>arr[j]){
+			if temp>arr[j] {
 				arr[i] = arr[j]
 				arr[j] = temp
 				temp = arr[i]

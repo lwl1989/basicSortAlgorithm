@@ -12,7 +12,7 @@ package sort
 平均效率 lgn
  */
 func Select(arr []int,len int) []int{
-	var i,max int;
+	var i,max int
 	index := len-1
 	for i = 0; i < len-1; i ++ {
 		max = i
@@ -21,9 +21,9 @@ func Select(arr []int,len int) []int{
 				index = j
 			}
 		}
-		if(max != i) {
-			arr[index] = arr[i];
-			arr[i] = max;
+		if max != i {
+			arr[index] = arr[i]
+			arr[i] = max
 		}
 	}
 	return arr

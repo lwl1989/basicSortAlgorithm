@@ -53,7 +53,7 @@ func swap(x,y,product *int) {
 }
 
 func swap2(x,y int)(int,int,int){
-	if(x>y){
+	if x>y {
 		x,y = y,x
 	}
 	return x,y,x*y

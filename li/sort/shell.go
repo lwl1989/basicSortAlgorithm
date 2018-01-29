@@ -17,5 +17,5 @@ func Shell(arr []int,len int) []int  {
 			}
 		}
 	}
-	return arr;
+	return arr
 }

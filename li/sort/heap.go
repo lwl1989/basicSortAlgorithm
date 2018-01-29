@@ -7,11 +7,11 @@ func Heap(arr []int, len int) []int  {
 			temp := arr[start]
 
 			for i := 2*start + 1; i<=end; i*=2 {
-			if(i<end && arr[i]<arr [i+1]){ //左右孩子的比较
+			if i<end && arr[i]<arr [i+1] { //左右孩子的比较
 				i=i+1
 			}
-			if(temp > arr[i]){//左右孩子中获胜者与父亲的比较
-				break;
+			if temp > arr[i] {//左右孩子中获胜者与父亲的比较
+				break
 			}
 			//将孩子结点上位，则以孩子结点的位置进行下一轮的筛选
 			arr[start] = arr[i]
