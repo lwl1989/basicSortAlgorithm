@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 )
+
 type Sender chan<- int
 
 type Receiver <-chan int
@@ -18,46 +19,44 @@ func main() {
 		ch2 <- "已到达！"
 	}()
 
-
 	var value string = "数据"
-	values,ok := <-ch2  //返回值,狀態
-	value = value+values
-	fmt.Println(values,ok)
+	values, ok := <-ch2 //返回值,狀態
+	value = value + values
+	fmt.Println(values, ok)
 
-	fmt.Println("sss")
+	fmt.Println("")
 
+	//var myChannel = make(chan int, 0)  //size是0  會阻塞住等待輸出
+	//var number = 6
+	//go func() {
+	//	var sender Sender = myChannel
+	//	sender <- number
+	//	fmt.Println("Sent!")
+	//}()
+	//go func() {
+	//	var receiver Receiver = myChannel
+	//	fmt.Println("Received!", <-receiver)
+	//}()
+	//// 让main函数执行结束的时间延迟1秒，
+	//// 以使上面两个代码块有机会被执行。
+	//time.Sleep(time.Second)
+	//通道只有2個長度 因此在不釋放前是不能再次放入的
+	var channels = make(chan int, 2)
 
-		//var myChannel = make(chan int, 0)  //size是0  會阻塞住等待輸出
-		//var number = 6
-		//go func() {
-		//	var sender Sender = myChannel
-		//	sender <- number
-		//	fmt.Println("Sent!")
-		//}()
-		//go func() {
-		//	var receiver Receiver = myChannel
-		//	fmt.Println("Received!", <-receiver)
-		//}()
-		//// 让main函数执行结束的时间延迟1秒，
-		//// 以使上面两个代码块有机会被执行。
-		//time.Sleep(time.Second)
-
-		var channels = make(chan int,2)
-		var num =0;
-		for ;num<6;num++ {
-
-			go func() {
-				var sender Sender = channels
-				sender <- num
-				fmt.Println(num)
-			}()
+	go func() {
+		var sender Sender = channels
+		var num = 0
+		for ; num < 6; num++ {
+			sender <- num
+			fmt.Println("往通道放入了", num)
 		}
-	fmt.Println("阻塞了？")
-		go func() {
+	}()
 
-			var receiver Receiver = channels
-			dd := <-receiver
-			fmt.Println("釋放了一個",dd)
-		}()
-		time.Sleep(time.Second)
-	}
+	fmt.Println("阻塞了？")
+	go func() {
+		var receiver Receiver = channels
+		dd := <-receiver
+		fmt.Println("釋放了一個", dd)
+	}()
+	time.Sleep(time.Second)
+}
