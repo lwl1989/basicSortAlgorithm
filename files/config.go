@@ -9,9 +9,6 @@ type UploadConfig interface {
 	GetKey() string
 }
 
-type config struct {
-
-}
 
 type OmpConfig struct {
 

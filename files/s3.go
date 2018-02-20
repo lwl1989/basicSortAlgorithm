@@ -8,14 +8,14 @@ import (
 	"fmt"
 )
 
-func newSession() (*session.Session, error)  {
-	ak := ""
-	sk := ""
+func newSession(constant *Constant) (*session.Session, error)  {
+	ak := constant.GetConstant("S3_KEY")
+	sk := constant.GetConstant("S3_SECRET")
 	cred := credentials.NewStaticCredentials(ak, sk, "")
 	endpoint := ""
 	disableSSL := false
 	config := &aws.Config{
-		Region:           aws.String(""),
+		Region:           aws.String(constant.GetConstant("S3_REGION")),
 		Endpoint:         &endpoint,
 		S3ForcePathStyle: aws.Bool(true),
 		Credentials:      cred,
@@ -24,17 +24,17 @@ func newSession() (*session.Session, error)  {
 	return session.NewSession(config)
 }
 
-func doUpload(uploader *UploadFile,config UploadConfig) {
-	sessions, err := newSession()
+func DoUpload(uploader *UploadFile,constant *Constant) (*s3.PutObjectOutput, error) {
+	sessions, err := newSession(constant)
 	if err != nil {
 		fmt.Println("failed to create session,", err)
-		return
+		return nil,err
 	}
 	svc := s3.New(sessions)
 
 	params := &s3.PutObjectInput{
-		Bucket			:   aws.String(config.SaveBucket()), // Required
-		Key				:   aws.String(config.GetKey()),  // Required
+		Bucket			:   aws.String("dev-smart-app"), // Required
+		Key				:   aws.String("test"),  // Required
 		ACL          	:	aws.String("public-read"),
 		Body         	:	uploader,
 		ContentLength	:	aws.Int64(uploader.GetSize()),
@@ -43,5 +43,5 @@ func doUpload(uploader *UploadFile,config UploadConfig) {
 			"Key":aws.String("MetadataValue"),
 		},
 	}
-	_, err = svc.PutObject(params)
+	return svc.PutObject(params)
 }
