@@ -6,6 +6,8 @@ import (
 	"io"
 	"basicSortAlgorithm/files"
 	"fmt"
+	"basicSortAlgorithm/awsS3"
+	"net/url"
 )
 
 var con = &files.Constant{Path:"/www/smart/app/stand/global/config/AwsS3Config.php"}
@@ -25,7 +27,7 @@ func Upload(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	result,err := files.DoUpload(uploader,con)
+	result,err := awsS3.DoUpload(uploader,con)
 	if nil != err {
 		w.WriteHeader(500)
 		fmt.Println(err)
@@ -37,9 +39,24 @@ func Upload(w http.ResponseWriter, r *http.Request)  {
 	io.WriteString(w,"success")
 }
 
+func Zoom(w http.ResponseWriter, r *http.Request)  {
+	query,_ := url.ParseQuery(r.URL.RawQuery)
+
+	if _, ok := query["param"]; ok {
+		fmt.Println(ok)
+		fileName := query["param"][0]
+
+		//獲取圖片要生成的尺寸
+		//判斷文件存在與否
+		//存在生成縮略圖
+		fmt.Println(fileName)
+	}
+}
+
 func main()  {
 	con.ReadConstant()
-	http.HandleFunc("/f", Upload)
+	http.HandleFunc("/omp", Upload)
+	http.HandleFunc("/zoom", Zoom)
 	err := http.ListenAndServe("0.0.0.0:9999", nil)
 
 	if err != nil {
