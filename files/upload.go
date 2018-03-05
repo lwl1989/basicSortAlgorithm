@@ -64,3 +64,7 @@ func (uploadFile *UploadFile) Read(p []byte) (n int, err error)  {
 func (uploadFile *UploadFile) ToS3() bool {
 	return false
 }
+
+func (uploadFile *UploadFile) GetFrom() map[string]string {
+
+}

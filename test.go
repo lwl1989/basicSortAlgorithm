@@ -1,14 +1,29 @@
 package main
 
 import (
-	"basicSortAlgorithm/files"
-	"basicSortAlgorithm/image"
-	"basicSortAlgorithm/awsS3"
+	"net/http"
+	"io"
+	"fmt"
+	"log"
 )
+func Test(w http.ResponseWriter, r *http.Request)  {
+	if r.Method == "GET" {
+		w.WriteHeader(500)
+		io.WriteString(w,"route err")
+		return
+	}
+	r.ParseMultipartForm(32<< 20)
+	fmt.Println(r.MultipartForm)
+	w.WriteHeader(200)
+	io.WriteString(w,"success")
+}
 
 func main()  {
-	awsS3.Con = &files.Constant{Path:"/www/smart/app/stand/global/config/AwsS3Config.php"}
-	awsS3.Con.ReadConstant()
+	http.HandleFunc("/omp", Test)
+	err := http.ListenAndServe("0.0.0.0:9999", nil)
 
-	image.DoZoom("/dev-smart-app/599fe94303b1c1bf4b37436f/user/avatar/544/7/d/1/c7d1c96c5bcaa9829f5140f9e7206e2d8b63d0bd5_280x280.jpg")
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+
 }
