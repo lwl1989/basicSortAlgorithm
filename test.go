@@ -12,7 +12,7 @@ func Test(w http.ResponseWriter, r *http.Request)  {
 		io.WriteString(w,"route err")
 		return
 	}
-	r.ParseMultipartForm(32<< 20)
+	r.ParseMultipartForm(90 << 20)
 	fmt.Println(r.MultipartForm)
 	w.WriteHeader(200)
 	io.WriteString(w,"success")
