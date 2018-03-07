@@ -5,7 +5,9 @@ import (
 	"io"
 	"fmt"
 	"log"
+	"basicSortAlgorithm/recommend"
 )
+
 func Test(w http.ResponseWriter, r *http.Request)  {
 	if r.Method == "GET" {
 		w.WriteHeader(500)
@@ -19,6 +21,8 @@ func Test(w http.ResponseWriter, r *http.Request)  {
 }
 
 func main()  {
+	recommend.InitMatrix()
+	return
 	http.HandleFunc("/omp", Test)
 	err := http.ListenAndServe("0.0.0.0:9999", nil)
 
