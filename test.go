@@ -5,7 +5,6 @@ import (
 	"io"
 	"fmt"
 	"log"
-	"basicSortAlgorithm/recommend"
 )
 
 func Test(w http.ResponseWriter, r *http.Request)  {
@@ -15,14 +14,13 @@ func Test(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	r.ParseMultipartForm(90 << 20)
-	fmt.Println(r.MultipartForm)
+	fmt.Println(r.Form.Get("t1"))
 	w.WriteHeader(200)
 	io.WriteString(w,"success")
 }
 
 func main()  {
-	recommend.InitMatrix()
-	return
+
 	http.HandleFunc("/omp", Test)
 	err := http.ListenAndServe("0.0.0.0:9999", nil)
 

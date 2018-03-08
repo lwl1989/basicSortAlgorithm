@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+	"github.com/henrylee2cn/pholcus/common/mgo"
+)
 
 type Person struct {
 	Name    string
@@ -48,7 +52,34 @@ func (cat *Cat) Move(address string) string {
 	return ""
 }
 
+
+type User struct  {
+	Id int
+	Name string
+	//addr string
+}
+
+
 func main() {
+	u := User{Id:1001, Name:"xxx"/*, addr:"xxx"*/}
+	t := reflect.TypeOf(u)
+	v := reflect.ValueOf(u)
+
+	insert := mgo.Insert{
+		Database:"small_app_log",
+		Collection:"omp_file_meta",
+		//	Docs:[]map[string]interface{}
+	}
+	docs := make(map[string]interface{})
+
+	for k := 0; k < t.NumField(); k++ {
+		docs[t.Field(k).Name] = v.Field(k).Interface()
+		fmt.Printf("%s -- %v \n", t.Field(k).Name, v.Field(k).Interface())
+	}
+	insert.Docs = append(insert.Docs, docs)
+
+	fmt.Println(docs,insert)
+
 
 	myCat := Cat{"Little C", 2, "In the house"}
 	pCat := &myCat  //取地址操作  此時 pCat =>  *Cat 類型
@@ -86,3 +117,8 @@ func main() {
 	fmt.Printf("%p--%p",&(p1.Name), &(p4.Name))
 	fmt.Println()
 }
+
+
+
+
+

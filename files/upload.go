@@ -9,23 +9,25 @@ import (
 type UploadFile struct {
 	file multipart.File
 	header *multipart.FileHeader
-	error string
+	uploadConfer *UploadConfer
+	error error
 }
 
 type UploadInterface interface {
 	Judge()
 	GetMimeType() string
 }
+
 // 获取文件大小的接口
 type Size interface {
 	Size() int64
 }
 
-
 func  Init(r *http.Request) (uploadFile *UploadFile, err error)  {
-
+	r.ParseMultipartForm(90<<20)  //90M + 10M
 	file, header, err := r.FormFile("file")
-	uploader := &UploadFile{file,header,""}
+	sid := r.Header.Get("x-seller-long")
+	uploader := &UploadFile{file,header, GetNewConfer(r,file,sid),nil}
 	if err != nil {
 		return nil,err
 	}
@@ -35,7 +37,7 @@ func  Init(r *http.Request) (uploadFile *UploadFile, err error)  {
 }
 
 func (uploadFile *UploadFile) Error() string {
-	return uploadFile.error
+	return uploadFile.error.Error()
 }
 
 func (uploadFile *UploadFile) Judge(config UploadConfig) (bool,error) {
