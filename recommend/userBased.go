@@ -18,9 +18,9 @@ type VertexType rune // 顶点数值类型
 type userLikedMatrix struct {
 	UserVertex	[]string
 	GoodsVertex []string  //顶点
-	Vertex    [][]int32	   //值
-	goodsNum int32
-	userNum  int32
+	Vertex    [][]int	   //值
+	goodsNum int
+	userNum  int
 }
 
 func InitMatrix() {
@@ -38,7 +38,7 @@ func InitMatrix() {
 	matrix := &userLikedMatrix{
 		UserVertex:[]string{},
 		GoodsVertex:[]string{},
-		Vertex:[][]int32{},
+		Vertex:[][]int{},
 		goodsNum:0,
 		userNum:0,
 	}
@@ -53,53 +53,58 @@ func (matrix *userLikedMatrix) AddUser(userLikeList UserLikeList)  {
 
 	if matrix.userNum > 0 {
 		for k, v := range matrix.UserVertex {
+			fmt.Println(userLikeList.name, v)
 			if userLikeList.name == v {
 				x = k
-			} else {
-				length := len(matrix.UserVertex)
-				x = length
-				matrix.UserVertex = append(matrix.UserVertex, v)
-				matrix.userNum += 1
+				break
 			}
 		}
-	} else {
-		matrix.userNum = 1
-		matrix.UserVertex = append(matrix.UserVertex, userLikeList.name)
 	}
 
-	if len(matrix.Vertex) < x || x == -1 {
-		x = 0
-		y = 0
-		matrix.Vertex = append(matrix.Vertex, []int32{0})
+	length := len(matrix.UserVertex)
+	if x == -1 {
+		x = length
+		matrix.Vertex = append(matrix.Vertex, []int{0})
+		matrix.userNum += 1
+	}else{
+		x -= 1
 	}
-	if matrix.goodsNum > 0 {
-		for k, v := range matrix.GoodsVertex {
-			for _, name := range userLikeList.liked {
+	matrix.UserVertex = append(matrix.UserVertex, userLikeList.name)
+
+	fmt.Println(y)
+	for _, name := range userLikeList.liked {
+
+		y = -1
+		if matrix.goodsNum > 0 {
+			for k, v := range matrix.GoodsVertex {
 				if name == v {
-					matrix.Vertex[x][k] += 1
-				} else {
-					if y == -1 {
-						y = 0
-					}
-					length := len(matrix.GoodsVertex)
-					y = length
-					//if _,ok := matrix.Vertex[x][] {
-					//
-					//}
-
-					matrix.GoodsVertex = append(matrix.GoodsVertex, v)
-					matrix.goodsNum += 1
+					y = k
+					break
 				}
 			}
+
+			if y == -1 {
+
+				for i:=len(matrix.Vertex[x]); i < matrix.goodsNum; i++ {
+					matrix.Vertex[x] = append(matrix.Vertex[x], 0)
+				}
+				matrix.GoodsVertex = append(matrix.GoodsVertex, name)
+				matrix.goodsNum += 1
+
+				matrix.Vertex[x] = append(matrix.Vertex[x], 1)
+			} else {
+				fmt.Println(x,y,matrix.Vertex[x][y],name)
+				matrix.Vertex[x][y] += 1
+			}
+		} else {
+			matrix.goodsNum += 1
+			matrix.GoodsVertex = append(matrix.GoodsVertex, name)
+			matrix.Vertex[x][0] += 1
 		}
-	} else {
-		matrix.goodsNum = 1
-		matrix.GoodsVertex = userLikeList.liked
 	}
 
-
-	fmt.Println(matrix.Vertex)
-	fmt.Println(x,y)
+	//fmt.Println(matrix.Vertex)
+	//fmt.Println(x,y)
 	//if len(matrix.Vertex[x]) < y {
 	//	matrix.Vertex[x] = append(matrix.Vertex[x], 0)
 	//}
