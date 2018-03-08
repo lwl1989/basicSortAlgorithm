@@ -24,8 +24,8 @@ type Size interface {
 
 func  Init(r *http.Request) (uploadFile *UploadFile, err error)  {
 	r.ParseMultipartForm(90<<20)  //90M + 10M
-
 	file, header, err := r.FormFile("file")
+	defer file.Close()
 	if err != nil {
 		return nil,err
 	}
