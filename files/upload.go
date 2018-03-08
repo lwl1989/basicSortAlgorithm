@@ -9,7 +9,6 @@ import (
 type UploadFile struct {
 	file multipart.File
 	header *multipart.FileHeader
-	uploadConfer *UploadConfer
 	error error
 }
 
@@ -25,9 +24,21 @@ type Size interface {
 
 func  Init(r *http.Request) (uploadFile *UploadFile, err error)  {
 	r.ParseMultipartForm(90<<20)  //90M + 10M
+
 	file, header, err := r.FormFile("file")
-	sid := r.Header.Get("x-seller-long")
-	uploader := &UploadFile{file,header, GetNewConfer(r,file,sid),nil}
+	if err != nil {
+		return nil,err
+	}
+	//sid := r.Header.Get("x-seller-long")
+	var uploader *UploadFile = nil
+	uploader = &UploadFile{file,header,nil}
+
+	fmt.Println(uploader.GetMimeType())  //image/png
+	fmt.Println(uploader)				 //%!v(PANIC=runtime error: invalid memory address or nil pointer dereference)
+	fmt.Println(&uploader)				 //0xc42000e120
+
+
+	err = uploader.Judge(GetOmpSetting())
 	if err != nil {
 		return nil,err
 	}
@@ -40,11 +51,16 @@ func (uploadFile *UploadFile) Error() string {
 	return uploadFile.error.Error()
 }
 
-func (uploadFile *UploadFile) Judge(config UploadConfig) (bool,error) {
-	fmt.Println(uploadFile.header) //判断文件头 是否允许
-	size := uploadFile.file.(Size).Size() //判断大小是否超过
-	fmt.Println(size)
-	return false,uploadFile
+func (uploadFile *UploadFile) Judge(setting *Setting) error {
+	err := setting.JudgeMime(uploadFile.GetMimeType())
+	if err != nil {
+		return err
+	}
+	err = setting.JudgeSize(uploadFile.file.(Size).Size())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (uploadFile *UploadFile) GetMimeType() string {
@@ -65,8 +81,4 @@ func (uploadFile *UploadFile) Read(p []byte) (n int, err error)  {
 
 func (uploadFile *UploadFile) ToS3() bool {
 	return false
-}
-
-func (uploadFile *UploadFile) GetFrom() map[string]string {
-
 }

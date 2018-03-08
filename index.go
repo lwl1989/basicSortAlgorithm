@@ -21,6 +21,9 @@ func Upload(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	uploader,err :=files.Init(r)
+	fmt.Println(uploader.GetMimeType())  //image/png
+	fmt.Println(uploader)				 //%!v(PANIC=runtime error: invalid memory address or nil pointer dereference)
+	fmt.Println(&uploader)				 //0xc42000e120
 	if nil != err {
 		w.WriteHeader(500)
 		fmt.Println(err)
@@ -28,6 +31,10 @@ func Upload(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
+	w.WriteHeader(200)
+	io.WriteString(w,"success")
+
+	return
 	result,err := awsS3.DoUpload(uploader)
 	if nil != err {
 		w.WriteHeader(500)
@@ -60,7 +67,7 @@ func main()  {
 	awsS3.Con.ReadConstant()
 	http.HandleFunc("/omp", Upload)
 	http.HandleFunc("/zoom", Zoom)
-	err := http.ListenAndServe("0.0.0.0:9999", nil)
+	err := http.ListenAndServe("0.0.0.0:9998", nil)
 
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

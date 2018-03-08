@@ -2,24 +2,10 @@ package files
 
 import (
 	"net/http"
-	"basicSortAlgorithm/awsS3"
 	"gopkg.in/h2non/filetype.v1"
 	"mime/multipart"
 	"io/ioutil"
 )
-
-type FileMapping map[string]map[string]string
-
-func GetOmpFileMapping() *FileMapping {
-	return &FileMapping{
-		"msg": {
-			"cover": "omp/msg/image/cover",
-			"video": "omp/msg/video",
-			//...
-		},
-		//...
-	}
-}
 
 
 type UploadConfer struct {
@@ -38,14 +24,17 @@ func GetNewConfer(r *http.Request, file multipart.File, sid string) *UploadConfe
 	buf, _ := ioutil.ReadAll(file)
 	kind, _ := filetype.Match(buf)
 	//size := file.(Size).Size()
-	return &UploadConfer{
-		bucket: awsS3.Con.GetConstant("S3_REGION"),
+	conf := &UploadConfer{
+		bucket: "",
 		sha1:   r.Form.Get("sha1"),
 		module: r.Form.Get("module"),
 		cate:   r.Form.Get("type"),
 		sid:    sid,
 		suffix: kind.Extension,
 	}
+	generate(conf)
+
+	return conf
 }
 
 func (uploadConfer *UploadConfer) SetSuffix(suffix string) {

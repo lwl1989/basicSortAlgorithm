@@ -1,14 +1,30 @@
 package main
 
 import (
-//	"fmt"
 	"basicSortAlgorithm/li/interfaces"
 	"basicSortAlgorithm/li/redis"
-//	"fmt"
-	"time"
+	"fmt"
 )
 
+
+type fff struct {
+	Name string
+}
+
+func Init() *fff {
+	return &fff{"的撒多"}
+}
 func main() {
+	fff1 := Init()
+	fmt.Println(fff1.Name)
+	fmt.Println(fff1)
+	fmt.Println(&fff1)
+	return
+
+
+
+
+
 	option := redis.GetOption()
 	option.Port=12345
 	option.Host="54.222.155.203"
